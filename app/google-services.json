@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "127101764388",
+    "project_id": "firebas-open-classroom",
+    "storage_bucket": "firebas-open-classroom.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127101764388:android:d3bb37b75567cfd23929b1",
+        "android_client_info": {
+          "package_name": "com.example.go4lunch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzlDgWRFcFEXeEvJf0vEhXFSGxD2PquPs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
