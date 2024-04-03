@@ -20,6 +20,16 @@ public class Workmate {
         this.isNotificationActive = isNotificationActive;
         this.avatar = avatar;
     }
+    public Workmate(String id, String name, String mail,String avatar) {
+        this.id = id;
+        this.name = name;
+        this.mail = mail;
+        this.avatar = avatar;
+        this.isNotificationActive = false;
+    }
+    public Workmate(){
+
+    }
 
     //Getter
 

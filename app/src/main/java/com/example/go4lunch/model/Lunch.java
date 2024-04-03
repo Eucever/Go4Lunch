@@ -17,6 +17,9 @@ public class Lunch {
         this.restaurant = restaurant;
     }
 
+    public Lunch(){
+    }
+
     //Getter
     public String getDate() {
         return date;

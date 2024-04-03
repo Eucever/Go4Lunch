@@ -16,6 +16,8 @@ public class Restaurant {
     private String type;
 
     //Constructor
+    public Restaurant() {
+    }
 
     public Restaurant(String id, String name, String address, String openingHours, Double rating, String image, String phoneNumber, String website, String type) {
         this.id = id;

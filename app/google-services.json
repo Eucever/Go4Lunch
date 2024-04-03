@@ -12,7 +12,12 @@
           "package_name": "com.example.go4lunch"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "127101764388-vpsjr2jf8gv4c96gp536bu8f4nlbjrb8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCzlDgWRFcFEXeEvJf0vEhXFSGxD2PquPs"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127101764388-vpsjr2jf8gv4c96gp536bu8f4nlbjrb8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
