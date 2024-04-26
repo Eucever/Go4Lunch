@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.model.Lunch;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.Workmate;
 import com.firebase.ui.auth.AuthUI;
@@ -21,7 +20,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class WorkmateRepository{
+public class
+WorkmateRepository{
 
     private final MutableLiveData<ArrayList<Workmate>> workmatesList = new MutableLiveData<>();
 
@@ -50,7 +50,7 @@ public class WorkmateRepository{
         return db.collection("workmate");
     }
 
-    private Workmate getFirebaseUserAsWorkmate() {
+    public Workmate getFirebaseUserAsWorkmate() {
         Workmate workmate = new Workmate();
         FirebaseUser user = getWorkmate();
         if (user != null) {
@@ -156,7 +156,6 @@ public class WorkmateRepository{
                         if(task.getResult().size()>0){
                             valueCheck.postValue(true);
                         }else {
-                            Log.d("CHECKLIKED", "restaurant not found");
                             valueCheck.postValue(false);
                         }
                     } else {

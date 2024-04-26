@@ -1,34 +1,37 @@
 package com.example.go4lunch.model;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
-public class Restaurant {
+public class Restaurant implements Serializable {
 
     private String id;
     private String name;
     private String address;
-    private String openingHours;
+    private Boolean openingHours;
 
     private Double rating;
     private String image;
-    private String phoneNumber;
-    private String website;
-    private String type;
+
+    //private String phoneNumber;
+    //private String website;
+    private List<String> types;
 
     //Constructor
     public Restaurant() {
     }
 
-    public Restaurant(String id, String name, String address, String openingHours, Double rating, String image, String phoneNumber, String website, String type) {
+    public Restaurant(String id, String name, String address, Boolean openingHours, Double rating, String image, List<String> types) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.openingHours = openingHours;
         this.rating = rating;
         this.image = image;
-        this.phoneNumber = phoneNumber;
-        this.website = website;
-        this.type = type;
+        /*this.phoneNumber = phoneNumber;
+        this.website = website;*/
+        this.types = types;
     }
 
     //Getter
@@ -45,7 +48,7 @@ public class Restaurant {
         return address;
     }
 
-    public String getOpeningHours() {
+    public Boolean getOpeningHours() {
         return openingHours;
     }
 
@@ -57,16 +60,8 @@ public class Restaurant {
         return image;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public String getType() {
-        return type;
+    public List<String> getTypes() {
+        return types;
     }
 
 
@@ -84,7 +79,7 @@ public class Restaurant {
         this.address = address;
     }
 
-    public void setOpeningHours(String openingHours) {
+    public void setOpeningHours(Boolean openingHours) {
         this.openingHours = openingHours;
     }
 
@@ -96,16 +91,9 @@ public class Restaurant {
         this.image = image;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setType(List<String> type) {
+        this.types = types;
     }
 
 
@@ -116,11 +104,11 @@ public class Restaurant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Restaurant that = (Restaurant) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(address, that.address) && Objects.equals(openingHours, that.openingHours) && Objects.equals(rating, that.rating) && Objects.equals(image, that.image) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(website, that.website) && Objects.equals(type, that.type);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(address, that.address) && Objects.equals(openingHours, that.openingHours) && Objects.equals(rating, that.rating) && Objects.equals(image, that.image) && Objects.equals(types, that.types);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, address, openingHours, rating, image, phoneNumber, website, type);
+        return Objects.hash(id, name, address, openingHours, rating, image, types);
     }
 }

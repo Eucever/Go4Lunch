@@ -1,51 +1,33 @@
 package com.example.go4lunch;
 
-import com.example.go4lunch.BuildConfig;
-import static com.example.go4lunch.repository.WorkmateRepository.getWorkmate;
-
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-
-
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
-import com.example.go4lunch.model.Lunch;
-import com.example.go4lunch.model.Restaurant;
-import com.example.go4lunch.model.Workmate;
-import com.example.go4lunch.place.ListRestaurant;
-import com.example.go4lunch.repository.LocationRepository;
-import com.example.go4lunch.repository.LunchRepository;
-import com.example.go4lunch.repository.RestaurantRepository;
-import com.example.go4lunch.repository.WorkmateRepository;
-import com.example.go4lunch.viewmodel.DemoViewModel;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.util.Log;
-import android.view.View;
-
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.go4lunch.databinding.ActivityMainBinding;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.model.location.GPSStatus;
+import com.example.go4lunch.place.ListRestaurant;
+import com.example.go4lunch.place.Result;
+import com.example.go4lunch.repository.LocationRepository;
+import com.example.go4lunch.repository.RestaurantRepository;
+import com.example.go4lunch.ui.ListRestaurantFragment;
+import com.example.go4lunch.ui.ListWorkmatesFragment;
+import com.example.go4lunch.viewmodel.DemoViewModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.material.snackbar.Snackbar;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
-
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,11 +39,17 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String LONGITUDE_KEY = "CLE_LONGITUDE";
+
+    private final String LATITUDE_KEY = "CLE_LATITUDE";
+
     private RestaurantRepository restaurantRepository = new RestaurantRepository();
 
     private DemoViewModel mDemoViewModel;
 
-    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private GPSStatus gpsStatus;
+
+    public Restaurant restaurantTosend = new Restaurant();
 
     @BindView(R.id.buttonMap)
     public Button buttonMap;
@@ -86,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         configureViewModel();
 
+
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         buttonMap.setOnClickListener(view -> {
-
             Call<ListRestaurant> listRestaurantCall = restaurantRepository.getAllRestaurant(
                     "https://maps.googleapis.com/maps/api/place/",
                     "37.4226047,-122.0851341",
@@ -113,11 +101,23 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.isSuccessful()) {
                         Log.i("response", "found");
-                        ListRestaurant listRestaurant = response.body();
-                        for (int i = 0; i < listRestaurant.getResults().size(); i++) {
-                            Log.i("Response", listRestaurant.getResults().get(i).getName());
-                        }
+                        ListRestaurant listReponse = response.body();
+                        List<Restaurant> list_Restaurants = new ArrayList<>();
+                        for (int i = 0; i < listReponse.getResults().size(); i++) {
+                            Log.i("Response", listReponse.getResults().get(i).getVicinity());
+                            list_Restaurants.add(resultToRestaurant(listReponse.getResults().get(i)));
 
+                        }
+                        restaurantTosend = resultToRestaurant(listReponse.getResults().get(0));
+
+
+
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("CLE_LIST_RESTOS", (Serializable) list_Restaurants);
+                        ListRestaurantFragment fragListrestau = new ListRestaurantFragment();
+                        fragListrestau.setArguments(bundle);
+                        FragmentManager fm = getSupportFragmentManager();
+                        fragListrestau.display(fm);
 
                     } else Log.i("Response", "Code " + response.code());
                 }
@@ -128,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             });
-            LunchRepository lunchRepository = LunchRepository.getInstance();
+
+
+            /*LunchRepository lunchRepository = LunchRepository.getInstance();
 
             Restaurant resto1 = new Restaurant("1", "Le resto 1", "Adress 1", "8h00", 4.5, "http", "06655464", "Site", "Pizza");
             Restaurant resto2 = new Restaurant("2", "Le resto 2", "Adress 2", "8h30", 2.5, "http", "06452512", "Site", "Burger");
@@ -182,11 +184,16 @@ public class MainActivity extends AppCompatActivity {
 
             lunchRepository.deleteLunch(resto1, "5");
             lunchRepository.deleteLunch(resto1, "6");
-            lunchRepository.deleteLunch(resto2, "7");
+            lunchRepository.deleteLunch(resto2, "7");*/
 
         });
         buttonWmate.setOnClickListener(view -> {
-            WorkmateRepository wMateRepo = WorkmateRepository.getInstance();
+
+            ListWorkmatesFragment fragListWmate = new ListWorkmatesFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            fragListWmate.display(fm);
+
+            /*WorkmateRepository wMateRepo = WorkmateRepository.getInstance();
 
             mAuth.signInWithEmailAndPassword("user1@gmail.com", "password").addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
@@ -209,8 +216,8 @@ public class MainActivity extends AppCompatActivity {
             }
             wMateRepo.createOrUpdateWorkmate();
 
-            Restaurant resto1 = new Restaurant("1", "Le resto 1", "Adress 1", "8h00", 4.5, "http", "06655464", "Site", "Pizza");
-            Restaurant resto2 = new Restaurant("2", "Le resto 2", "Adress 2", "8h30", 2.5, "http", "06452512", "Site", "Burger");
+            Restaurant resto1 = new Restaurant("1", "Le resto 1", "Adress 1", true, 4.5, "http", null);
+            Restaurant resto2 = new Restaurant("2", "Le resto 2", "Adress 2", true, 2.5, "http", null);
 
 
             wMateRepo.getAllWorkmates().observe(this, arg -> {
@@ -255,15 +262,28 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("WORKMATENOTIFCHECK", "The user doesn't have notification active");
                 }
             });
-            wMateRepo.signOut(this);
+            wMateRepo.signOut(this);*/
         });
         buttonGPS.setOnClickListener(view -> {
-            testGps();
+
+            coordGps();
+
+            Bundle bundle = new Bundle();
+            bundle.putDouble(LONGITUDE_KEY, gpsStatus.getLongitude() );
+            bundle.putDouble(LATITUDE_KEY, gpsStatus.getLatitude());
+            ListRestaurantFragment fragListRestau = new ListRestaurantFragment();
+            fragListRestau.setArguments(bundle);
+            FragmentManager fm = getSupportFragmentManager();
+            fragListRestau.display(fm);
+
+
+            //testGps();
 
         });
     }
 
-    private void testGps(){
+    private void coordGps(){
+
 
         ActivityCompat.requestPermissions(
                 this,
@@ -275,11 +295,15 @@ public class MainActivity extends AppCompatActivity {
             if (arg == null){
                 Log.e("DEMOVMTEST","Error arg null");
             }else {
+                Log.d("DEMOVMTEST","longitude :" + arg.getLongitude());
+
                 Log.d("DEMOVMTEST","latitude :" + arg.getLatitude());
 
-                Log.d("DEMOVMTEST","longitude :" + arg.getLongitude());
+
+                setGPSStatus(arg.getLongitude(), arg.getLatitude());
             }
         });
+
     }
     @Override
     public void onResume(){
@@ -289,9 +313,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setGPSStatus(Double longitude, Double latitude){
+        gpsStatus = new GPSStatus(longitude, latitude);
+    };
+
     private void configureViewModel(){
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mDemoViewModel = new DemoViewModel(new LocationRepository(fusedLocationClient));
+    }
+
+    public Restaurant resultToRestaurant(Result result){
+        if (result != null && result.getOpeningHours() != null){
+            return new Restaurant(result.getPlaceId(),
+                    result.getName(),
+                    result.getVicinity(),
+                    result.getOpeningHours().getOpenNow(),
+                    result.getRating(),
+                    result.getIcon(),
+                    result.getTypes());
+
+        }if (result != null && result.getOpeningHours() == null) {
+            return new Restaurant(result.getPlaceId(),
+                    result.getName(),
+                    result.getVicinity(),
+                    false,
+                    result.getRating(),
+                    result.getIcon(),
+                    result.getTypes());
+
+        }else {
+            return null;
+        }
+
     }
 
     @Override
