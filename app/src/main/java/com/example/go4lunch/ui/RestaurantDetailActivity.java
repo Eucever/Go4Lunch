@@ -24,8 +24,6 @@ import com.example.go4lunch.model.Workmate;
 import com.example.go4lunch.viewmodel.DemoViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-
 public class RestaurantDetailActivity extends AppCompatActivity {
 
     public Restaurant restaurantSent;
@@ -48,7 +46,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     public RecyclerView workmateRecycler;
 
-    private RestaurantDetailActivityAdapter restauAdapter;
+    private WorkmateRecyclerAdapter restauAdapter;
 
 
     private final static String CLE_RESTAU = "CLE_RESTAU";
@@ -71,7 +69,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
         workmateRepository = WorkmateRepository.getInstance();*/
 
-        restauAdapter = new RestaurantDetailActivityAdapter(new ArrayList<>());
+        restauAdapter = new WorkmateRecyclerAdapter();
 
         restaurantSent = (Restaurant) getIntent().getSerializableExtra(CLE_RESTAU);
 
@@ -104,12 +102,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     }
 
     private void configureViewModel(){
-        //mDemoViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(DemoViewModel.class);
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
         mDemoViewModel = new ViewModelProvider(this, viewModelFactory).get(DemoViewModel.class);
 
-        /*FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mDemoViewModel = new DemoViewModel(new LocationRepository(fusedLocationClient));*/
     }
 
     public static void navigate(Context context, Restaurant restaurant) {
@@ -123,7 +118,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         workmateRecycler.setAdapter(restauAdapter);
         mDemoViewModel.getWorkmatesThatAlreadyChooseRestaurantForTodayLunchForThatRestaurant(restaurantSent).observe(this, arg -> {
             if (arg == null) {
-                Log.e("RECYCLERCONFIG", "error arg Lunch null");
+                Log.e("RECYCLERCONFIG", "Error arg Lunch null");
             } else {
                 restauAdapter.setmWorkmates(arg);
 

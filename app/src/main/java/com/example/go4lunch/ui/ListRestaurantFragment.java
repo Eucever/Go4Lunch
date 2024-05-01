@@ -103,7 +103,13 @@ public class ListRestaurantFragment extends DialogFragment {
         Double longitude = getArguments().getDouble(LONGITUDE_KEY);
         Double latitude = getArguments().getDouble(LATITUDE_KEY);
 
-
+        mDemoViewModel.getGpsLivedata().observe(this, arg ->{
+            if (arg == null){
+                Log.e("ONCREATECONFIG", "Error arg null");
+            }else {
+                configureRestauList(arg.getLatitude(), arg.getLongitude());
+            }
+        });
         configureRestauList(latitude,longitude);
 
 
@@ -117,6 +123,7 @@ public class ListRestaurantFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
+
     }
 
     private void configureRestauList(Double latitude, Double longitude){
@@ -191,7 +198,5 @@ public class ListRestaurantFragment extends DialogFragment {
         listRestauAdapter = new ListRestaurantFragmentAdapter();
         restaurantsRecycler.setLayoutManager(new LinearLayoutManager(this.getContext()));
         restaurantsRecycler.setAdapter(listRestauAdapter);
-
-
     }
 }

@@ -67,9 +67,10 @@ public class LunchRepository {
                         }
                         if (lunches.isEmpty() || lunches.size()<0){
                             todayLunch.postValue(null);
+                        }else {
+                            todayLunch.postValue(lunches.get(0));
                         }
 
-                        todayLunch.postValue(lunches.get(0));
                     } else {
                         Log.d("Error", "Error getting documents: ", task.getException());
                         todayLunch.postValue(null);

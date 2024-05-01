@@ -13,17 +13,18 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Workmate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RestaurantDetailActivityAdapter extends RecyclerView.Adapter<RestaurantDetailActivityAdapter.ViewHolder> {
+public class WorkmateRecyclerAdapter extends RecyclerView.Adapter<WorkmateRecyclerAdapter.ViewHolder> {
 
     List<Workmate> mWorkmates;
 
-    public RestaurantDetailActivityAdapter (List<Workmate> items){
-        mWorkmates = items;
+    public WorkmateRecyclerAdapter(){
+        mWorkmates = new ArrayList<>();
     }
 
     public void setmWorkmates(List<Workmate> workmates){

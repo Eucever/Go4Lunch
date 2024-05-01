@@ -10,7 +10,6 @@ public class Restaurant implements Serializable {
     private String name;
     private String address;
     private Boolean openingHours;
-
     private Double rating;
     private String image;
 

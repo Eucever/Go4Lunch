@@ -143,6 +143,16 @@ public class DemoViewModel extends ViewModel {
         return mWmateRepo.getFirebaseUserAsWorkmate();
     }
 
+    public LiveData<Boolean> getNotificationActive(){
+        return mWmateRepo.getNotificationActive();
+    }
+
+    public void createOrUpdateWorkmate(Boolean isNotificationActive){
+        mWmateRepo.createOrUpdateWorkmate(isNotificationActive);
+    }
+
+
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.go4lunch.ui;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +35,15 @@ public class ListRestaurantFragmentAdapter extends RecyclerView.Adapter<ListRest
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.avatarRestauItemList)
         public ImageView avatarRestauItemList;
-        @BindView(R.id.restauItemListText)
-        public TextView restauItemListText;
+
+        @BindView(R.id.restauItemListAddress)
+        public TextView restauItemListAddress;
+
+        @BindView(R.id.restauItemListName)
+        public TextView restauItemListName;
+
+        @BindView(R.id.restauItemListHours)
+        public TextView restauItemListHours;
 
         public ViewHolder(View view) {
             super(view);
@@ -53,7 +61,14 @@ public class ListRestaurantFragmentAdapter extends RecyclerView.Adapter<ListRest
     @Override
     public void onBindViewHolder(final ListRestaurantFragmentAdapter.ViewHolder holder, int position) {
         Restaurant restaurant = mRestaurants.get(position);
-        holder.restauItemListText.setText(restaurant.getName());
+        holder.restauItemListName.setText(restaurant.getName());
+        holder.restauItemListAddress.setText(restaurant.getAddress());
+        if(restaurant.getOpeningHours()){
+            holder.restauItemListHours.setText("Open now");
+        }else {
+            holder.restauItemListHours.setText("Closed now");
+            holder.restauItemListHours.setTextColor(Color.parseColor("#A8201A"));
+        }
         Glide.with(holder.avatarRestauItemList.getContext())
                 .load(restaurant.getImage())
                 .into(holder.avatarRestauItemList);

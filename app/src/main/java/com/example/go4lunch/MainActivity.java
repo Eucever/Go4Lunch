@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
@@ -16,26 +15,21 @@ import androidx.navigation.ui.AppBarConfiguration;
 import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.location.GPSStatus;
-import com.example.go4lunch.place.ListRestaurant;
 import com.example.go4lunch.place.Result;
 import com.example.go4lunch.repository.LocationRepository;
 import com.example.go4lunch.repository.RestaurantRepository;
 import com.example.go4lunch.ui.ListRestaurantFragment;
 import com.example.go4lunch.ui.ListWorkmatesFragment;
+import com.example.go4lunch.ui.MapFragment;
+import com.example.go4lunch.ui.SettingsFragment;
+import com.example.go4lunch.ui.YourLunchFragment;
 import com.example.go4lunch.viewmodel.DemoViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,13 +60,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        configureViewModel();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
 
-        configureViewModel();
+
 
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
@@ -85,49 +79,16 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         buttonMap.setOnClickListener(view -> {
-            Call<ListRestaurant> listRestaurantCall = restaurantRepository.getAllRestaurant(
-                    "https://maps.googleapis.com/maps/api/place/",
-                    "37.4226047,-122.0851341",
-                    1000,
-                    "restaurant",
-                    BuildConfig.google_maps_api);
 
-            Log.i("Call", listRestaurantCall.request().toString());
+            coordGps();
 
-            listRestaurantCall.enqueue(new Callback<ListRestaurant>() {
-                @Override
-                public void onResponse(@NonNull Call<ListRestaurant> call, @NonNull
-                Response<ListRestaurant> response) {
-
-                    if (response.isSuccessful()) {
-                        Log.i("response", "found");
-                        ListRestaurant listReponse = response.body();
-                        List<Restaurant> list_Restaurants = new ArrayList<>();
-                        for (int i = 0; i < listReponse.getResults().size(); i++) {
-                            Log.i("Response", listReponse.getResults().get(i).getVicinity());
-                            list_Restaurants.add(resultToRestaurant(listReponse.getResults().get(i)));
-
-                        }
-                        restaurantTosend = resultToRestaurant(listReponse.getResults().get(0));
-
-
-
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("CLE_LIST_RESTOS", (Serializable) list_Restaurants);
-                        ListRestaurantFragment fragListrestau = new ListRestaurantFragment();
-                        fragListrestau.setArguments(bundle);
-                        FragmentManager fm = getSupportFragmentManager();
-                        fragListrestau.display(fm);
-
-                    } else Log.i("Response", "Code " + response.code());
-                }
-
-                @Override
-                public void onFailure(Call<ListRestaurant> call, Throwable t) {
-                    Log.i("error", "Call Failed");
-                }
-
-            });
+            Bundle bundle = new Bundle();
+            bundle.putDouble(LONGITUDE_KEY, gpsStatus.getLongitude() );
+            bundle.putDouble(LATITUDE_KEY, gpsStatus.getLatitude());
+            MapFragment mapFragment = new MapFragment();
+            mapFragment.setArguments(bundle);
+            FragmentManager fm = getSupportFragmentManager();
+            mapFragment.display(fm);
 
 
             /*LunchRepository lunchRepository = LunchRepository.getInstance();
@@ -363,6 +324,15 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            SettingsFragment settingsFragment = new SettingsFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            settingsFragment.display(fm);
+            return true;
+        }
+        if( id == R.id.action_yourlunch){
+            YourLunchFragment yourLunchFragment = new YourLunchFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            yourLunchFragment.display(fm);
             return true;
         }
 
