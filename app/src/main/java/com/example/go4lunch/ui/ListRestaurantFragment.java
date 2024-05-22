@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -16,13 +15,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.injection.Injection;
 import com.example.go4lunch.injection.ViewModelFactory;
-import com.example.go4lunch.model.Restaurant;
-import com.example.go4lunch.place.ListRestaurant;
-import com.example.go4lunch.place.Result;
 import com.example.go4lunch.viewmodel.DemoViewModel;
 
 import java.util.ArrayList;
@@ -30,9 +25,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,11 +35,14 @@ public class ListRestaurantFragment extends DialogFragment {
 
     private DemoViewModel mDemoViewModel;
 
+    Double longitude;
+
+    Double latitude;
     private final String LONGITUDE_KEY = "CLE_LONGITUDE";
 
     private final String LATITUDE_KEY = "CLE_LATITUDE";
 
-    private List<Restaurant> mRestaurants = new ArrayList<>();
+    private List<RestaurantItem> mRestaurants;
 
     private static final String TAG = "ListRestaurantFragment";
 
@@ -96,23 +91,27 @@ public class ListRestaurantFragment extends DialogFragment {
 
         ButterKnife.bind(this, view);
 
+        mRestaurants = new ArrayList<>();
+
         configureViewModel();
 
         configureListRestaurantsRecyclerView();
 
-        Double longitude = getArguments().getDouble(LONGITUDE_KEY);
-        Double latitude = getArguments().getDouble(LATITUDE_KEY);
+        longitude = getArguments().getDouble(LONGITUDE_KEY);
+        latitude = getArguments().getDouble(LATITUDE_KEY);
+
 
         mDemoViewModel.getGpsLivedata().observe(this, arg ->{
             if (arg == null){
                 Log.e("ONCREATECONFIG", "Error arg null");
-            }else {
-                configureRestauList(arg.getLatitude(), arg.getLongitude());
-            }
+            }else if(arg.getLatitude ()!= null && arg.getLongitude() !=null){
+                    longitude = arg.getLongitude();
+                    latitude = arg.getLatitude();
+                    configureRestauList(arg.getLatitude(), arg.getLongitude());
+                }
         });
+        Log.d("TAG", "Call configure restau List "+ latitude +" " + longitude);
         configureRestauList(latitude,longitude);
-
-
 
         // Inflate the layout for this fragment
         return view;
@@ -123,11 +122,12 @@ public class ListRestaurantFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
+        mDemoViewModel.refresh();
 
     }
 
     private void configureRestauList(Double latitude, Double longitude){
-        Call<ListRestaurant> listRestaurantCall = mDemoViewModel.getAllRestaurant(
+        /*Call<ListRestaurant> listRestaurantCall = mDemoViewModel.getAllRestaurant(
                 "https://maps.googleapis.com/maps/api/place/",
                 latitude+","+longitude,
                 1000,
@@ -135,7 +135,7 @@ public class ListRestaurantFragment extends DialogFragment {
                 BuildConfig.google_maps_api);
 
         Log.i("Call", listRestaurantCall.request().toString());
-
+        ListRestaurantFragment fragment = this;
         listRestaurantCall.enqueue(new Callback<ListRestaurant>() {
             @Override
             public void onResponse(@NonNull Call<ListRestaurant> call, @NonNull
@@ -144,16 +144,26 @@ public class ListRestaurantFragment extends DialogFragment {
                 if (response.isSuccessful()) {
                     Log.i("response", "found");
                     ListRestaurant listReponse = response.body();
-                    List<Restaurant> list_Restaurants = new ArrayList<>();
+                    List<RestaurantItem> list_Restaurants = new ArrayList<>();
                     for (int i = 0; i < listReponse.getResults().size(); i++) {
                         Log.i("Response in Fragment ", listReponse.getResults().get(i).getVicinity());
-                        list_Restaurants.add(resultToRestaurant(listReponse.getResults().get(i)));
-                        mRestaurants = list_Restaurants;
-                    }
-                listRestauAdapter.setmRestaurants(mRestaurants);
+                        list_Restaurants.add(resultToRestaurantItem(listReponse.getResults().get(i), new LatLng(latitude, longitude)));
 
+                    }
+                    Collections.sort(list_Restaurants);
+                    mRestaurants = list_Restaurants;
+                    mDemoViewModel.getAllRestaurantsWithLunch().observe(fragment, restausWithLunch ->{
+                        for (int i = 0; i < mRestaurants.size(); i++) {
+                            int count = countRestauFrequency(restausWithLunch, mRestaurants.get(i));
+                            mRestaurants.get(i).setNbParticipants(count);
+                        }
+                        listRestauAdapter.setmRestaurants(mRestaurants);
+
+
+                    });
                 } else Log.i("Response", "Code " + response.code());
             }
+
 
             @Override
             public void onFailure(Call<ListRestaurant> call, Throwable t) {
@@ -161,37 +171,39 @@ public class ListRestaurantFragment extends DialogFragment {
             }
 
 
+        });*/
+        mDemoViewModel.getAllRestaurantsItemList(latitude, longitude).observe(this, restausItemList->{
+            if (restausItemList != null){
+                mRestaurants = restausItemList;
+                mDemoViewModel.getAllRestaurantsWithLunch().observe(this, restausWithLunch -> {
+                    for (int i = 0; i < mRestaurants.size(); i++) {
+                        int count = countRestauFrequency(restausWithLunch, mRestaurants.get(i));
+                        mRestaurants.get(i).setNbParticipants(count);
+                    }
+                    listRestauAdapter.setmRestaurants(mRestaurants);
+                });
+            }else {
+                Log.e("ERRORLIST", "ERROR NO RESTAURANTS IN LIST");
+            }
         });
+
+
+
+
 
     }
     private void configureViewModel(){
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
         mDemoViewModel = new ViewModelProvider(this, viewModelFactory).get(DemoViewModel.class);
     }
-
-    public Restaurant resultToRestaurant(Result result){
-        if (result != null && result.getOpeningHours() != null){
-            return new Restaurant(result.getPlaceId(),
-                    result.getName(),
-                    result.getVicinity(),
-                    result.getOpeningHours().getOpenNow(),
-                    result.getRating(),
-                    result.getIcon(),
-                    result.getTypes());
-
-        }if (result != null && result.getOpeningHours() == null) {
-            return new Restaurant(result.getPlaceId(),
-                    result.getName(),
-                    result.getVicinity(),
-                    false,
-                    result.getRating(),
-                    result.getIcon(),
-                    result.getTypes());
-
-        }else {
-            return null;
+    public int countRestauFrequency(List<RestaurantItem> restaurantItems, RestaurantItem restaurantItem){
+        int occurence = 0;
+        for(int i = 0; i<restaurantItems.size(); i++){
+            if(restaurantItems.get(i).getId().equals(restaurantItem.getId())){
+                occurence++;
+            }
         }
-
+        return occurence;
     }
 
     private void configureListRestaurantsRecyclerView(){

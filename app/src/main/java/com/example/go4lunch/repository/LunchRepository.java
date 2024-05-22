@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.go4lunch.model.Lunch;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.Workmate;
+import com.example.go4lunch.ui.RestaurantItem;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,6 +27,8 @@ public class LunchRepository {
 
 
     private final MutableLiveData<ArrayList<Workmate>> workmatesRestaurant= new MutableLiveData<>();
+
+    private final MutableLiveData<ArrayList<RestaurantItem>> restaurantsWithLunch = new MutableLiveData<>();
     private static LunchRepository sLunchRepository;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -51,7 +54,28 @@ public class LunchRepository {
 
     public void createLunch(Restaurant restaurantChosen, Workmate workmate) {
         Lunch lunchAdd = new Lunch(toDay(), workmate, restaurantChosen);
-        getLunchCollection().add(lunchAdd);
+        getLunchCollection()
+                .whereEqualTo("wMate.id", workmate.getId())
+                .whereEqualTo("date", toDay())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete();
+                        }
+                    }else {
+                        Log.d("Error", "Error getting documents: ", task.getException());
+
+                    }
+                    getLunchCollection().add(lunchAdd);
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //handle error
+                        Log.e("ERROR", "Request Failed");
+                    }
+                });;
+
     }
 
     public LiveData<Lunch> getTodayLunch(String id_workmate) {
@@ -163,4 +187,30 @@ public class LunchRepository {
                     }
                 });
     }
+
+    public LiveData<ArrayList<RestaurantItem>>  getAllRestaurantsWithLunch(){
+
+        getLunchCollection()
+                .whereEqualTo("date", toDay())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ArrayList<RestaurantItem> restaurants = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            restaurants.add(RestaurantItem.restaurantToRestaurantItem(document.toObject(Lunch.class).getRestaurant()));
+                        }
+                        restaurantsWithLunch.postValue(restaurants);
+                    } else {
+                        Log.e("Error", "Error getting documents: ", task.getException());
+                    }
+
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //handle error
+                        restaurantsWithLunch.postValue(null);
+                    }
+                });
+        return restaurantsWithLunch;}
+
 }

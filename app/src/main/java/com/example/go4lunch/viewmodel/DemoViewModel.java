@@ -4,27 +4,38 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 import android.location.Location;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.MainApplication;
 import com.example.go4lunch.model.Lunch;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.Workmate;
 import com.example.go4lunch.model.location.GPSStatus;
 import com.example.go4lunch.place.ListRestaurant;
+import com.example.go4lunch.place.Result;
 import com.example.go4lunch.repository.LocationRepository;
 import com.example.go4lunch.repository.LunchRepository;
 import com.example.go4lunch.repository.RestaurantRepository;
 import com.example.go4lunch.repository.WorkmateRepository;
+import com.example.go4lunch.ui.RestaurantItem;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DemoViewModel extends ViewModel {
 
@@ -113,12 +124,155 @@ public class DemoViewModel extends ViewModel {
         return mLunchRepo.checkIfCurrentWorkmateChoseThisRestaurantForLunch(restaurant, user_id);
     }
 
+    public LiveData<ArrayList<RestaurantItem>> getAllRestaurantsWithLunch(){
+        return mLunchRepo.getAllRestaurantsWithLunch();
+    }
+
 
 
     //RESTAU REPO
 
     public Call<ListRestaurant> getAllRestaurant(String url, String location, int radius, String type, String key){
         return mRestoRepo.getAllRestaurant(url, location, radius, type, key);
+    }
+    public double getDistanceFromPosition(LatLng posGPS, com.example.go4lunch.place.Location location){
+        return SphericalUtil.computeDistanceBetween(posGPS, new LatLng(location.getLat(), location.getLng()));
+    }
+
+    public Restaurant resultToRestaurant(Result result){
+        if (result != null && result.getOpeningHours() != null){
+            return new Restaurant(result.getPlaceId(),
+                    result.getName(),
+                    result.getVicinity(),
+                    result.getOpeningHours().getOpenNow(),
+                    result.getRating(),
+                    result.getIcon(),
+                    result.getTypes(),
+                    result.getGeometry().getLocation());
+
+        }if (result != null && result.getOpeningHours() == null) {
+            return new Restaurant(result.getPlaceId(),
+                    result.getName(),
+                    result.getVicinity(),
+                    false,
+                    result.getRating(),
+                    result.getIcon(),
+                    result.getTypes(),
+                    result.getGeometry().getLocation());
+
+        }else {
+            return null;
+        }
+
+    }
+    public LiveData<List<RestaurantItem>> getAllRestaurantsItemList(double latitude, double longitude){
+        MutableLiveData<List<RestaurantItem>> liveDataRestaurantsItem = new MutableLiveData<>();
+
+        Call<ListRestaurant> listRestaurantCall = getAllRestaurant(
+                "https://maps.googleapis.com/maps/api/place/",
+                latitude+","+longitude,
+                1000,
+                "restaurant",
+                BuildConfig.google_maps_api);
+
+        Log.i("Call", listRestaurantCall.request().toString());
+        listRestaurantCall.enqueue(new Callback<ListRestaurant>() {
+            @Override
+            public void onResponse(@NonNull Call<ListRestaurant> call, @NonNull
+            Response<ListRestaurant> response) {
+
+                if (response.isSuccessful()) {
+                    Log.i("response", "found");
+                    ListRestaurant listReponse = response.body();
+                    List<RestaurantItem> restaurantsItemList = new ArrayList<>();
+                    for (int i = 0; i < listReponse.getResults().size(); i++) {
+                        Log.i("Response in Fragment ", listReponse.getResults().get(i).getVicinity());
+                        restaurantsItemList.add(resultToRestaurantItem(listReponse.getResults().get(i), new LatLng(latitude,longitude)));
+
+                    }
+                    Collections.sort(restaurantsItemList);
+                    liveDataRestaurantsItem.postValue(restaurantsItemList);
+
+                } else Log.i("Response", "Code " + response.code());
+            }
+
+
+            @Override
+            public void onFailure(Call<ListRestaurant> call, Throwable t) {
+                Log.i("error", "Call Failed");
+            }
+
+
+        });
+        return liveDataRestaurantsItem;
+    }
+
+    public RestaurantItem resultToRestaurantItem(Result result, LatLng posGps){
+        if (result != null && result.getOpeningHours() != null){
+            return new RestaurantItem(result.getPlaceId(),
+                    result.getName(),
+                    result.getVicinity(),
+                    result.getOpeningHours().getOpenNow(),
+                    result.getRating(),
+                    result.getIcon(),
+                    result.getTypes(),
+                    getDistanceFromPosition(posGps, result.getGeometry().getLocation()));
+
+        }if (result != null && result.getOpeningHours() == null) {
+            return new RestaurantItem(result.getPlaceId(),
+                    result.getName(),
+                    result.getVicinity(),
+                    false,
+                    result.getRating(),
+                    result.getIcon(),
+                    result.getTypes(),
+                    getDistanceFromPosition(posGps, result.getGeometry().getLocation()));
+
+        }else {
+            return null;
+        }
+
+    }
+
+    public LiveData<List<Restaurant>> getAllRestaurantsList(double latitude, double longitude){
+        MutableLiveData<List<Restaurant>> liveDataRestaurants = new MutableLiveData<>();
+
+        Call<ListRestaurant> listRestaurantCall = getAllRestaurant(
+                "https://maps.googleapis.com/maps/api/place/",
+                latitude+","+longitude,
+                1000,
+                "restaurant",
+                BuildConfig.google_maps_api);
+
+        Log.i("Call", listRestaurantCall.request().toString());
+        listRestaurantCall.enqueue(new Callback<ListRestaurant>() {
+            @Override
+            public void onResponse(@NonNull Call<ListRestaurant> call, @NonNull
+            Response<ListRestaurant> response) {
+
+                if (response.isSuccessful()) {
+                    Log.i("response", "found");
+                    ListRestaurant listReponse = response.body();
+                    List<Restaurant> restaurantsList = new ArrayList<>();
+                    for (int i = 0; i < listReponse.getResults().size(); i++) {
+                        Log.i("Response in Fragment ", listReponse.getResults().get(i).getVicinity());
+                        restaurantsList.add(resultToRestaurant(listReponse.getResults().get(i)));
+
+                    }
+                    liveDataRestaurants.postValue(restaurantsList);
+
+                } else Log.i("Response", "Code " + response.code());
+            }
+
+
+            @Override
+            public void onFailure(Call<ListRestaurant> call, Throwable t) {
+                Log.i("error", "Call Failed");
+            }
+
+
+        });
+        return liveDataRestaurants;
     }
 
     // WORKMATE REPO
@@ -138,6 +292,8 @@ public class DemoViewModel extends ViewModel {
     public void addLikedRestaurant(Restaurant restaurant){
         mWmateRepo.addLikedRestaurant(restaurant);
     }
+
+
 
     public Workmate getFirebaseUserAsWorkmate(){
         return mWmateRepo.getFirebaseUserAsWorkmate();

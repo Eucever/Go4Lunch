@@ -20,13 +20,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ListRestaurantFragmentAdapter extends RecyclerView.Adapter<ListRestaurantFragmentAdapter.ViewHolder>{
-    List<Restaurant> mRestaurants;
+    List<RestaurantItem> mRestaurants;
 
     public ListRestaurantFragmentAdapter (){
         mRestaurants = new ArrayList<>();
     }
 
-    public void setmRestaurants(List<Restaurant> restaurants){
+    public void setmRestaurants(List<RestaurantItem> restaurants){
         mRestaurants = restaurants;
         //Utilise plutot le diffutil
         notifyDataSetChanged();
@@ -45,6 +45,12 @@ public class ListRestaurantFragmentAdapter extends RecyclerView.Adapter<ListRest
         @BindView(R.id.restauItemListHours)
         public TextView restauItemListHours;
 
+        @BindView(R.id.restauItemWmateText)
+        public TextView restauItemWmateText;
+
+        @BindView(R.id.textDistance)
+        public TextView restauiItemDistance;
+
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
@@ -60,11 +66,14 @@ public class ListRestaurantFragmentAdapter extends RecyclerView.Adapter<ListRest
 
     @Override
     public void onBindViewHolder(final ListRestaurantFragmentAdapter.ViewHolder holder, int position) {
-        Restaurant restaurant = mRestaurants.get(position);
+        RestaurantItem restaurant = mRestaurants.get(position);
         holder.restauItemListName.setText(restaurant.getName());
         holder.restauItemListAddress.setText(restaurant.getAddress());
+        holder.restauiItemDistance.setText((int)restaurant.getDistance() + "m");
+        holder.restauItemWmateText.setText("("+restaurant.getNbParticipants()+")");
         if(restaurant.getOpeningHours()){
             holder.restauItemListHours.setText("Open now");
+            holder.restauItemListHours.setTextColor(Color.parseColor("#39b800"));
         }else {
             holder.restauItemListHours.setText("Closed now");
             holder.restauItemListHours.setTextColor(Color.parseColor("#A8201A"));
@@ -74,9 +83,32 @@ public class ListRestaurantFragmentAdapter extends RecyclerView.Adapter<ListRest
                 .into(holder.avatarRestauItemList);
 
         holder.itemView.setOnClickListener(view -> {
-            RestaurantDetailActivity.navigate(view.getContext(), mRestaurants.get(position));
+
+            RestaurantDetailActivity.navigate(view.getContext(), restaurantItemToRestaurant(mRestaurants.get(position)));
         });
 
+    }
+
+    public Restaurant restaurantItemToRestaurant(RestaurantItem restauItem){
+        Restaurant restau =new Restaurant();
+        if (restauItem != null && restauItem.getOpeningHours() != null) {
+            restau = new Restaurant(restauItem.getId(),
+                    restauItem.getName(),
+                    restauItem.getAddress(),
+                    restauItem.getOpeningHours(),
+                    restauItem.getRating(),
+                    restauItem.getImage(),
+                    restauItem.getTypes());
+        }else if (restauItem != null && restauItem.getOpeningHours() == null){
+            restau = new Restaurant(restauItem.getId(),
+                    restauItem.getName(),
+                    restauItem.getAddress(),
+                    false,
+                    restauItem.getRating(),
+                    restauItem.getImage(),
+                    restauItem.getTypes());
+        }
+        return restau;
     }
 
     @Override

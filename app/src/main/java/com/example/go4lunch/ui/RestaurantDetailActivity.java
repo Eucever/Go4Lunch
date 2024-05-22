@@ -28,10 +28,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     public Restaurant restaurantSent;
 
-    //private LunchRepository lunchRepository;
-
-    //private WorkmateRepository workmateRepository;
-
     public ImageView avatarRestau;
 
     public TextView titleRestau;
@@ -64,10 +60,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         workmateRecycler = findViewById(R.id.workmatesRecycler);
         likeRestaubtn = findViewById(R.id.likeRestauButton);
         chooseRestauBtn = findViewById(R.id.chooseRestauBtn);
-
-        /*lunchRepository = LunchRepository.getInstance();
-
-        workmateRepository = WorkmateRepository.getInstance();*/
 
         restauAdapter = new WorkmateRecyclerAdapter();
 
