@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,15 +24,13 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ListWorkmatesFragment extends DialogFragment{
+public class ListWorkmatesFragment extends Fragment {
         private DemoViewModel mDemoViewModel;
 
         private ListWorkmatesFragmentAdapter listWmateAdapter;
 
         @BindView(R.id.ListWorkmatesRecycler)
         RecyclerView workmateRecycler;
-
-        private static final String TAG = "ListWorkmatesFragment";
 
         private FragmentManager mFragmentManager;
 
@@ -45,20 +43,14 @@ public class ListWorkmatesFragment extends DialogFragment{
             return fragment;
         }
 
-        public void showDialog() {
-            show(mFragmentManager, TAG);
-        }
 
         public void display(FragmentManager fragmentManager) {
             mFragmentManager = checkNotNull(fragmentManager);
-            showDialog();
         }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
-            setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_LightDialog);
 
         }
 
@@ -72,6 +64,16 @@ public class ListWorkmatesFragment extends DialogFragment{
             View view = inflater.inflate(R.layout.fragment_list_workmates, container,
                     false);
             ButterKnife.bind(this, view);
+
+            /*Toolbar mToolbar = ((CoreActivity) getActivity()).findViewById(R.id.toolbar);
+            // initialiser l'icone de la toolbar pour ce fragment
+            mToolbar.setNavigationIcon(R.drawable.baseline_star);
+            // définir l'action au clic sur le bouton de navigation de la toolbar
+            mToolbar.setNavigationOnClickListener(v -> {
+                //get parent activity
+                DrawerLayout dl = ((CoreActivity)getActivity()).findViewById(R.id.coreDrawer);
+                dl.open();
+            });*/
 
             listWmateAdapter = new ListWorkmatesFragmentAdapter(new ArrayList<>());
 

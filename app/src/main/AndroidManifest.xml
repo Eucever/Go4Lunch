@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -11,7 +11,6 @@
         tools:node="replace" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -21,16 +20,28 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Go4Lunch"
-        tools:targetApi="31" >
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="${googleMapApiKey}"/>
+        tools:targetApi="31">
+        <activity
+            android:name=".CoreActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Go4Lunch.NoActionBar" />
+        <activity
+            android:name=".AuthActivity"
+            android:exported="true"
+            android:label="@string/title_activity_auth"
+            android:theme="@style/Theme.Go4Lunch.NoActionBar" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${googleMapApiKey}" />
+
         <activity
             android:name=".ui.RestaurantDetailActivity"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Go4Lunch.NoActionBar" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

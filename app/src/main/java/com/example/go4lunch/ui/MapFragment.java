@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -33,9 +33,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapFragment extends DialogFragment implements OnMapReadyCallback {
-
-    private static final String TAG = "MapFragment";
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private List<Restaurant> mRestaurants = new ArrayList<>();
 
@@ -63,20 +61,14 @@ public class MapFragment extends DialogFragment implements OnMapReadyCallback {
         return fragment;
     }
 
-    public void showDialog() {
-        show(mFragmentManager, TAG);
-    }
 
     public void display(FragmentManager fragmentManager) {
         mFragmentManager = checkNotNull(fragmentManager);
-        showDialog();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_LightDialog);
 
     }
 
@@ -97,11 +89,22 @@ public class MapFragment extends DialogFragment implements OnMapReadyCallback {
 
         ButterKnife.bind(this, view);
 
+        /*mToolbar = ((CoreActivity) getActivity()).findViewById(R.id.toolbar);
+        // initialiser l'icone de la toolbar pour ce fragment
+        mToolbar.setNavigationIcon(R.drawable.baseline_star);
+        // définir l'action au clic sur le bouton de navigation de la toolbar
+        mToolbar.setNavigationOnClickListener(v -> {
+            //get parent activity
+            DrawerLayout dl = ((CoreActivity)getActivity()).findViewById(R.id.coreDrawer);
+            dl.open();
+        });*/
+
         configureViewModel();
 
-        longitude = getArguments().getDouble(LONGITUDE_KEY);
-        latitude = getArguments().getDouble(LATITUDE_KEY);
-
+        if(getArguments() != null && getArguments().size()>0) {
+            longitude = getArguments().getDouble(LONGITUDE_KEY);
+            latitude = getArguments().getDouble(LATITUDE_KEY);
+        }
 
 
         mDemoViewModel.getGpsLivedata().observe(this, gps ->{
@@ -172,42 +175,6 @@ public class MapFragment extends DialogFragment implements OnMapReadyCallback {
     }
 
     public void configureMarkers(){
-        /*Call<ListRestaurant> listRestaurantCall = mDemoViewModel.getAllRestaurant(
-                "https://maps.googleapis.com/maps/api/place/",
-                latitude+","+longitude,
-                1000,
-                "restaurant",
-                BuildConfig.google_maps_api);
-
-        Log.i("Call", listRestaurantCall.request().toString());
-
-        listRestaurantCall.enqueue(new Callback<ListRestaurant>() {
-            @Override
-            public void onResponse(@NonNull Call<ListRestaurant> call, @NonNull
-            Response<ListRestaurant> response) {
-
-                if (response.isSuccessful()) {
-                    Log.i("response", "found");
-                    ListRestaurant listReponse = response.body();
-                    List<Restaurant> list_Restaurants = new ArrayList<>();
-                    for (int i = 0; i < listReponse.getResults().size(); i++) {
-                        Log.i("Response in Fragment ", listReponse.getResults().get(i).getVicinity());
-                        list_Restaurants.add(mDemoViewModel.resultToRestaurant(listReponse.getResults().get(i)));
-                    }
-                    mRestaurants = list_Restaurants;
-
-
-
-                } else Log.i("Response", "Code " + response.code());
-            }
-
-
-            @Override
-            public void onFailure(Call<ListRestaurant> call, Throwable t) {
-                Log.i("error", "Call Failed");
-            }
-
-        });*/
         mDemoViewModel.getAllRestaurantsList(latitude,longitude).observe(this, restauList->{
             if (restauList != null){
                 mRestaurants = restauList;

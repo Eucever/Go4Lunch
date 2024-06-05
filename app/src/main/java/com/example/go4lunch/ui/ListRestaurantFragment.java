@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -31,7 +30,7 @@ import butterknife.ButterKnife;
  * Use the {@link ListRestaurantFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListRestaurantFragment extends DialogFragment {
+public class ListRestaurantFragment extends Fragment {
 
     private DemoViewModel mDemoViewModel;
 
@@ -43,8 +42,6 @@ public class ListRestaurantFragment extends DialogFragment {
     private final String LATITUDE_KEY = "CLE_LATITUDE";
 
     private List<RestaurantItem> mRestaurants;
-
-    private static final String TAG = "ListRestaurantFragment";
 
     private FragmentManager mFragmentManager;
 
@@ -62,20 +59,16 @@ public class ListRestaurantFragment extends DialogFragment {
         return fragment;
     }
 
-    public void showDialog() {
-        show(mFragmentManager, TAG);
-    }
 
     public void display(FragmentManager fragmentManager) {
         mFragmentManager = checkNotNull(fragmentManager);
-        showDialog();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_LightDialog);
+
 
     }
 
@@ -91,15 +84,27 @@ public class ListRestaurantFragment extends DialogFragment {
 
         ButterKnife.bind(this, view);
 
+        /*Toolbar mToolbar = ((CoreActivity) getActivity()).findViewById(R.id.toolbar);
+        // initialiser l'icone de la toolbar pour ce fragment
+        mToolbar.setNavigationIcon(R.drawable.baseline_star);
+        // définir l'action au clic sur le bouton de navigation de la toolbar
+        mToolbar.setNavigationOnClickListener(v -> {
+            //get parent activity
+            DrawerLayout dl = ((CoreActivity)getActivity()).findViewById(R.id.coreDrawer);
+            dl.open();
+        });*/
+
         mRestaurants = new ArrayList<>();
 
         configureViewModel();
 
         configureListRestaurantsRecyclerView();
 
-        longitude = getArguments().getDouble(LONGITUDE_KEY);
-        latitude = getArguments().getDouble(LATITUDE_KEY);
 
+        if(getArguments() != null && getArguments().size()>0) {
+            longitude = getArguments().getDouble(LONGITUDE_KEY);
+            latitude = getArguments().getDouble(LATITUDE_KEY);
+        }
 
         mDemoViewModel.getGpsLivedata().observe(this, arg ->{
             if (arg == null){
@@ -110,6 +115,7 @@ public class ListRestaurantFragment extends DialogFragment {
                     configureRestauList(arg.getLatitude(), arg.getLongitude());
                 }
         });
+
         Log.d("TAG", "Call configure restau List "+ latitude +" " + longitude);
         configureRestauList(latitude,longitude);
 
@@ -127,51 +133,9 @@ public class ListRestaurantFragment extends DialogFragment {
     }
 
     private void configureRestauList(Double latitude, Double longitude){
-        /*Call<ListRestaurant> listRestaurantCall = mDemoViewModel.getAllRestaurant(
-                "https://maps.googleapis.com/maps/api/place/",
-                latitude+","+longitude,
-                1000,
-                "restaurant",
-                BuildConfig.google_maps_api);
-
-        Log.i("Call", listRestaurantCall.request().toString());
-        ListRestaurantFragment fragment = this;
-        listRestaurantCall.enqueue(new Callback<ListRestaurant>() {
-            @Override
-            public void onResponse(@NonNull Call<ListRestaurant> call, @NonNull
-            Response<ListRestaurant> response) {
-
-                if (response.isSuccessful()) {
-                    Log.i("response", "found");
-                    ListRestaurant listReponse = response.body();
-                    List<RestaurantItem> list_Restaurants = new ArrayList<>();
-                    for (int i = 0; i < listReponse.getResults().size(); i++) {
-                        Log.i("Response in Fragment ", listReponse.getResults().get(i).getVicinity());
-                        list_Restaurants.add(resultToRestaurantItem(listReponse.getResults().get(i), new LatLng(latitude, longitude)));
-
-                    }
-                    Collections.sort(list_Restaurants);
-                    mRestaurants = list_Restaurants;
-                    mDemoViewModel.getAllRestaurantsWithLunch().observe(fragment, restausWithLunch ->{
-                        for (int i = 0; i < mRestaurants.size(); i++) {
-                            int count = countRestauFrequency(restausWithLunch, mRestaurants.get(i));
-                            mRestaurants.get(i).setNbParticipants(count);
-                        }
-                        listRestauAdapter.setmRestaurants(mRestaurants);
-
-
-                    });
-                } else Log.i("Response", "Code " + response.code());
-            }
-
-
-            @Override
-            public void onFailure(Call<ListRestaurant> call, Throwable t) {
-                Log.i("error", "Call Failed");
-            }
-
-
-        });*/
+        if(latitude == null || longitude == null){
+            return;
+        }
         mDemoViewModel.getAllRestaurantsItemList(latitude, longitude).observe(this, restausItemList->{
             if (restausItemList != null){
                 mRestaurants = restausItemList;

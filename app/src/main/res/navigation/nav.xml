@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/listRestaurantFragment">
+
+    <fragment
+        android:id="@+id/listRestaurantFragment"
+        android:name="com.example.go4lunch.ui.ListRestaurantFragment"
+        android:label="fragment_list_restaurant"
+        tools:layout="@layout/fragment_list_restaurant" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.go4lunch.ui.MapFragment"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/yourLunchFragment"
+        android:name="com.example.go4lunch.ui.YourLunchFragment"
+        android:label="fragment_list_yourlunch"
+        tools:layout="@layout/fragment_list_yourlunch" />
+    <fragment
+        android:id="@+id/listWorkmatesFragment"
+        android:name="com.example.go4lunch.ui.ListWorkmatesFragment"
+        android:label="fragment_list_workmates"
+        tools:layout="@layout/fragment_list_workmates" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.go4lunch.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <activity
+        android:id="@+id/signOut"
+        android:name="com.example.go4lunch.AuthActivity"
+        android:label="activity_auth"
+        tools:layout="@layout/activity_auth" />
+</navigation>
