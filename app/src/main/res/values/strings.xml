@@ -1,18 +1,26 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_yourlunch">Your Lunch</string>
+    <string name="action_settings" translatable="false">Settings</string>
+    <string name="action_yourlunch" translatable="false">Your Lunch</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
+    <string name="first_fragment_label" translatable="false">First Fragment</string>
+    <string name="second_fragment_label" translatable="false">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_detail_restaurant">DetailRestaurantActivity</string>
-    <string name="title_activity_restaurant_detail">RestaurantDetailActivity</string>
+    <string name="hello_first_fragment" translatable="false">Hello first fragment</string>
+    <string name="hello_second_fragment" translatable="false">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_detail_restaurant" translatable="false">DetailRestaurantActivity</string>
+    <string name="title_activity_restaurant_detail" translatable="false">RestaurantDetailActivity</string>
+    <string name="closed_restaurant">Closed now</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_auth">AuthActivity</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="title_activity_auth" translatable="false">AuthActivity</string>
+    <string name="opened_restaurant">Open now</string>
+    <string name="workmate_menu_title">Workmates</string>
+    <string name="list_view_title">List View</string>
+    <string name="map_view_title">Map View</string>
+    <string name="call_button_text">CALL</string>
+    <string name="like_button_text">LIKE</string>
+    <string name="website_text">WEBSITE</string>
 </resources>

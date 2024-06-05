@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="next">Suivant</string>
+    <string name="previous">Précédent</string>
+    <string name="closed_restaurant">Fermé</string>
+    <string name="opened_restaurant">Ouvert</string>
+    <string name="workmate_menu_title">Collègues</string>
+    <string name="list_view_title">Vue en Liste</string>
+    <string name="map_view_title">Carte</string>
+    <string name="call_button_text">APPELLER</string>
+    <string name="like_button_text">FAVORIS</string>
+    <string name="website_text">SITE WEB</string>
+</resources>

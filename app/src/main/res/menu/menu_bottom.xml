@@ -4,12 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <item
-        android:title="Map View"
+        android:title="@string/map_view_title"
+        android:icon="@drawable/baseline_map_24"
         android:id="@+id/mapFragment"/>
     <item
-        android:title="List View"
+        android:title="@string/list_view_title"
+        android:icon="@drawable/baseline_view_list_24"
         android:id="@+id/listRestaurantFragment"/>
     <item
-        android:title="Workmates"
+        android:title="@string/workmate_menu_title"
+        android:icon="@drawable/baseline_person_24"
         android:id="@+id/listWorkmatesFragment"/>
 </menu>

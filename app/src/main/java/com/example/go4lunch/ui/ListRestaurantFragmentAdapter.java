@@ -72,10 +72,10 @@ public class ListRestaurantFragmentAdapter extends RecyclerView.Adapter<ListRest
         holder.restauiItemDistance.setText((int)restaurant.getDistance() + "m");
         holder.restauItemWmateText.setText("("+restaurant.getNbParticipants()+")");
         if(restaurant.getOpeningHours()){
-            holder.restauItemListHours.setText("Open now");
+            holder.restauItemListHours.setText(R.string.opened_restaurant);
             holder.restauItemListHours.setTextColor(Color.parseColor("#39b800"));
         }else {
-            holder.restauItemListHours.setText("Closed now");
+            holder.restauItemListHours.setText(R.string.closed_restaurant);
             holder.restauItemListHours.setTextColor(Color.parseColor("#A8201A"));
         }
         Glide.with(holder.avatarRestauItemList.getContext())
