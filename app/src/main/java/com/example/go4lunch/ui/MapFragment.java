@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +46,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public Double latitude;
 
+    public Double longitudeStart;
+
+    public Double latitudeStart;
+
     private DemoViewModel mDemoViewModel;
 
     public GoogleMap mGoogleMap;
 
     @BindView(R.id.mapView)
     MapView mapView;
+
+    @BindView(R.id.myLocationButton)
+    FloatingActionButton myLocatbtn;
+
     private FragmentManager mFragmentManager;
     public MapFragment() {
         // Required empty public constructor
@@ -101,25 +110,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         configureViewModel();
 
+
+        Log.d("ONCREATEMAPFRAG", "long "+mDemoViewModel.getGpsLivedata().getValue());
         if(getArguments() != null && getArguments().size()>0) {
-            longitude = getArguments().getDouble(LONGITUDE_KEY);
-            latitude = getArguments().getDouble(LATITUDE_KEY);
+            longitudeStart = getArguments().getDouble(LONGITUDE_KEY);
+            latitudeStart = getArguments().getDouble(LATITUDE_KEY);
         }
 
 
         mDemoViewModel.getGpsLivedata().observe(this, gps ->{
+            Log.d("LOCATIOMapFragment", ""+gps);
             if (gps == null){
                 Log.e("ONCREATECONFIG", "Error arg null");
             }else if(gps.getLatitude()!= null && gps.getLongitude() != null) {
                 longitude = gps.getLongitude();
                 latitude = gps.getLatitude();
+                longitudeStart = longitude;
+                latitudeStart = latitude;
+                configureStartPosition();
+                configureMarkers();
             }
         });
 
+        if(latitude != null && longitude != null){
+            configureMarkers();
+
+        }
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        configureMarkers();
+        myLocatbtn.setOnClickListener(v -> {
+            configureStartPosition();
+        } );
+
+
 
         // Inflate the layout for this fragment
         return view;
@@ -127,15 +151,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+    private void configureStartPosition(){
+        if(latitude!= null && longitude != null){
+            mGoogleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(latitudeStart,longitudeStart)))
+                    .setIcon(BitmapDescriptorFactory
+                            .defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitudeStart,longitudeStart), 10));
+
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mGoogleMap = googleMap;
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-        mGoogleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude,longitude)))
-                .setIcon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude), 10));
+        configureStartPosition();
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -165,8 +197,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         latitude = poscamera.latitude;
                         longitude = poscamera.longitude;
                         Log.d("CAMERARUN", "Handler run");
-                        //configureMarkers()
-;
+                        //vv LIGNE COMMENTE POUR LIMITER LES APPELS A L API
+                        //configureMarkers();
                     }
                 }, 500);
             }
@@ -175,6 +207,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void configureMarkers(){
+        if(latitude == null || longitude == null){
+            return;
+        }
         mDemoViewModel.getAllRestaurantsList(latitude,longitude).observe(this, restauList->{
             if (restauList != null){
                 mRestaurants = restauList;
