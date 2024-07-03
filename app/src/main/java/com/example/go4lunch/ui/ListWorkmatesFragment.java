@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.go4lunch.R;
 import com.example.go4lunch.injection.Injection;
 import com.example.go4lunch.injection.ViewModelFactory;
+import com.example.go4lunch.model.Workmate;
 import com.example.go4lunch.viewmodel.DemoViewModel;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class ListWorkmatesFragment extends Fragment {
         private DemoViewModel mDemoViewModel;
 
         private ListWorkmatesFragmentAdapter listWmateAdapter;
+
+        private ArrayList<WorkmateItem> workmatesList;
 
         @BindView(R.id.ListWorkmatesRecycler)
         RecyclerView workmateRecycler;
@@ -92,6 +95,7 @@ public class ListWorkmatesFragment extends Fragment {
 
         @Override
         public void onResume() {
+            //configureWorkmateItemList();
             super.onResume();
         }
 
@@ -105,14 +109,44 @@ public class ListWorkmatesFragment extends Fragment {
     private void configureWorkmatesRecyclerView(){
         workmateRecycler.setLayoutManager(new LinearLayoutManager(this.getContext()));
         workmateRecycler.setAdapter(listWmateAdapter);
+        configureWorkmateItemList();
+        /*mDemoViewModel.getAllWorkmates().observe(this, arg ->{
+            if (arg == null){
+                Log.d("WORKMATES_FRAGMENT_LIST","No Workmates found in collection");
+            }else{
+                listWmateAdapter.setmWorkmates(arrayListWorkmateToWorkmateItem(arg));
+            }
+        });
+        */
+
+    }
+
+    private void configureWorkmateItemList(){
         mDemoViewModel.getAllWorkmates().observe(this, arg ->{
             if (arg == null){
                 Log.d("WORKMATES_FRAGMENT_LIST","No Workmates found in collection");
             }else{
-                listWmateAdapter.setmWorkmates(arg);
+                workmatesList = arrayListWorkmateToWorkmateItem(arg);
+                mDemoViewModel.getAllLunch().observe(this, lunches ->{
+                    for (int i=0; i<lunches.size(); i++){
+                        for (int j =0; j<workmatesList.size(); j++){
+                            if(lunches.get(i).getwMate().getId().equals(workmatesList.get(j).getId())){
+                                workmatesList.get(j).setRestaurantForLunch(lunches.get(i).getRestaurant());
+                            }
+                        }
+                    }
+                    listWmateAdapter.setmWorkmates(workmatesList);
+                });
             }
         });
+    }
 
+    public ArrayList<WorkmateItem> arrayListWorkmateToWorkmateItem(ArrayList<Workmate> workmateList){
+        ArrayList<WorkmateItem> workmateItemArrayList= new ArrayList<>();
+        for (int i = 0; i<workmateList.size(); i++){
+                workmateItemArrayList.add(WorkmateItem.workmateToWorkmateItem(workmateList.get(i)));
+        }
+        return workmateItemArrayList;
     }
 
 

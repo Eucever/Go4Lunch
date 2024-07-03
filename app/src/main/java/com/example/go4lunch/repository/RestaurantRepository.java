@@ -21,15 +21,15 @@ public class RestaurantRepository {
 
     public Call<ListRestaurant> getAllRestaurant(String url, String location, int radius, String type, String key){
 
-        //utiliser le retrofit builder
+        //use the retrofit builder
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        //appeler le retrofit.create avc interface retrofitmapsapi
-        //faire un appel sur api.getallrestaurant
-        //retourner le call api.getallrestaurant+
+        //call the retrofit.create with the interface retrofitmapsapi
+        //call the api.getallrestaurant
+        //return the call api.getallrestaurant
         return  retrofit.create(RetrofitMapsApi.class)
                 .getAllRestaurants(location, radius, type, key);
 

@@ -29,6 +29,8 @@ public class LunchRepository {
     private final MutableLiveData<ArrayList<Workmate>> workmatesRestaurant= new MutableLiveData<>();
 
     private final MutableLiveData<ArrayList<RestaurantItem>> restaurantsWithLunch = new MutableLiveData<>();
+
+    private final MutableLiveData<ArrayList<Lunch>> lunchesLiveData = new MutableLiveData<>();
     private static LunchRepository sLunchRepository;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -213,4 +215,29 @@ public class LunchRepository {
                 });
         return restaurantsWithLunch;}
 
+    public LiveData<ArrayList<Lunch>> getAllLunch(){
+        getLunchCollection()
+                .whereEqualTo("date", toDay())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ArrayList<Lunch> lunches = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            lunches.add((document.toObject(Lunch.class)));
+                        }
+                        lunchesLiveData.postValue(lunches);
+                    } else {
+                        Log.e("Error", "Error getting documents: ", task.getException());
+                    }
+
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //handle error
+                        lunchesLiveData.postValue(null);
+                    }
+                });
+        return lunchesLiveData;
+    }
 }
+

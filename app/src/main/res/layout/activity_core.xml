@@ -23,11 +23,12 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
-                android:background="@color/purple_500"
-                app:popupTheme="@style/Theme.AppCompat.Light"
+                app:collapseIcon="@drawable/setting_icon"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:navigationIcon="@drawable/fui_ic_apple_white_24dp"/>
+                android:background="@color/purple_500"
+                app:navigationIcon="@drawable/setting_icon"
+                app:popupTheme="@style/Theme.AppCompat.Light" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

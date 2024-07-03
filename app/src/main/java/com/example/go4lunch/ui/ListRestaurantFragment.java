@@ -7,13 +7,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.appcompat.widget.Toolbar;
 
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.go4lunch.CoreActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.injection.Injection;
 import com.example.go4lunch.injection.ViewModelFactory;
@@ -84,18 +87,9 @@ public class ListRestaurantFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        /*Toolbar mToolbar = ((CoreActivity) getActivity()).findViewById(R.id.toolbar);
-        // initialiser l'icone de la toolbar pour ce fragment
-        mToolbar.setNavigationIcon(R.drawable.baseline_star);
-        // définir l'action au clic sur le bouton de navigation de la toolbar
-        mToolbar.setNavigationOnClickListener(v -> {
-            //get parent activity
-            DrawerLayout dl = ((CoreActivity)getActivity()).findViewById(R.id.coreDrawer);
-            dl.open();
-        });*/
-
         mRestaurants = new ArrayList<>();
 
+        //Initialising ViewModel
         configureViewModel();
 
         configureListRestaurantsRecyclerView();
@@ -106,6 +100,8 @@ public class ListRestaurantFragment extends Fragment {
             latitude = getArguments().getDouble(LATITUDE_KEY);
         }
 
+
+        //Acquires GPS positions to configure the restaurant list if the positions aren't null
         mDemoViewModel.getGpsLivedata().observe(this, arg ->{
             if (arg == null){
                 Log.e("ONCREATECONFIG", "Error arg null");
@@ -116,8 +112,9 @@ public class ListRestaurantFragment extends Fragment {
                 }
         });
 
-        Log.d("TAG", "Call configure restau List "+ latitude +" " + longitude);
-        configureRestauList(latitude,longitude);
+
+        /*Log.d("TAG", "Call configure restau List "+ latitude +" " + longitude);
+        configureRestauList(latitude,longitude);*/
 
         // Inflate the layout for this fragment
         return view;
@@ -126,8 +123,24 @@ public class ListRestaurantFragment extends Fragment {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        Toolbar mToolbar = ((CoreActivity) getActivity()).findViewById(R.id.toolbar);
+        // initialise toolbar icon
+        mToolbar.setNavigationIcon(R.drawable.setting_icon);
+        // Defines navigation on click listener
+        mToolbar.setNavigationOnClickListener(v -> {
+            //get parent activity
+            DrawerLayout dl = ((CoreActivity)getActivity()).findViewById(R.id.coreDrawer);
+            dl.open();
+        });
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
+        //refreshing GPS location
         mDemoViewModel.refresh();
 
     }

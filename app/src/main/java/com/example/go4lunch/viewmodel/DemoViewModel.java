@@ -73,6 +73,7 @@ public class DemoViewModel extends ViewModel {
     //GPSREPO
 
     private void setStatus(Location location, Boolean hasGPSpermission) {
+        Log.d("locationViewmodel", "Setstatus " + location + " + " + hasGPSpermission);
         if(location== null){
             if(hasGPSpermission==null || !hasGPSpermission){
                 gpsStatusLiveData.setValue(new GPSStatus(false,false));
@@ -126,6 +127,10 @@ public class DemoViewModel extends ViewModel {
 
     public LiveData<ArrayList<RestaurantItem>> getAllRestaurantsWithLunch(){
         return mLunchRepo.getAllRestaurantsWithLunch();
+    }
+
+    public LiveData<ArrayList<Lunch>> getAllLunch(){
+        return mLunchRepo.getAllLunch();
     }
 
 

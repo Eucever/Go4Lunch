@@ -42,7 +42,6 @@ WorkmateRepository{
     public static FirebaseUser getWorkmate() {
         return mAuth.getCurrentUser();
     }
-
     public Task<Void> signOut(Context context){
             return AuthUI.getInstance().signOut(context);
     }
@@ -51,7 +50,6 @@ WorkmateRepository{
     }
 
     public Workmate getFirebaseUserAsWorkmate() {
-        Workmate workmate = new Workmate();
         FirebaseUser user = getWorkmate();
         if (user != null) {
             // UID specific to the provider
@@ -64,7 +62,7 @@ WorkmateRepository{
             if(user.getPhotoUrl()!=null){
                 photoUrl = user.getPhotoUrl().toString();
             }
-            workmate = new Workmate(uid, name, mail, photoUrl);
+            Workmate workmate = new Workmate(uid, name, mail, photoUrl);
             return workmate;
         }else {
             return null;

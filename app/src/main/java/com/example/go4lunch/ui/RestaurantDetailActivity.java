@@ -108,10 +108,14 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private void configureWorkmatesRecyclerView(){
         workmateRecycler.setLayoutManager(new LinearLayoutManager(this));
         workmateRecycler.setAdapter(restauAdapter);
+        updateWorkmateRecyclerList();
+    }
+    private void updateWorkmateRecyclerList(){
         mDemoViewModel.getWorkmatesThatAlreadyChooseRestaurantForTodayLunchForThatRestaurant(restaurantSent).observe(this, arg -> {
             if (arg == null) {
                 Log.e("RECYCLERCONFIG", "Error arg Lunch null");
             } else {
+                Log.d("RECYCLE UPDATE", "Updating wmate list recyclerview");
                 restauAdapter.setmWorkmates(arg);
 
             }
@@ -152,8 +156,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
            if (arg == null){
                Log.e("CHOOSEBUTTONCONFIG", "Error arg null");
            }else if (arg){
+               Log.d("CHOOSEBUTTONCONFIG", "CHECK current Initial arg true, le wmate a choisis le restau");
                chooseRestauBtn.setImageResource(R.drawable.sharp_clear_24);
            }else {
+               Log.d("CHOOSEBUTTONCONFIG", "CHECK current Initial arg false, le wmate n'a pas choisis le restau");
                chooseRestauBtn.setImageResource(R.drawable.baseline_check);
            }
        });
@@ -163,11 +169,16 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                if (arg == null){
                    Log.e("CHOOSEBUTTONCONFIG", "Error arg null");
                }else if (arg){
+                   Log.d("CHOOSEBUTTONCONFIG", "CHECK current Click arg true, suppression du choix");
                    mDemoViewModel.deleteLunch(restaurantSent, workmate.getId());
                    chooseRestauBtn.setImageResource(R.drawable.baseline_check);
+                   updateWorkmateRecyclerList();
+
                }else {
+                   Log.d("CHOOSEBUTTONCONFIG", "CHECK current click arg false, definition du choix");
                    mDemoViewModel.createLunch(restaurantSent, workmate);
                    chooseRestauBtn.setImageResource(R.drawable.sharp_clear_24);
+                   updateWorkmateRecyclerList();
                }
            });
        });

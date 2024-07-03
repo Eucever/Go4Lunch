@@ -11,4 +11,6 @@
     <string name="call_button_text">APPELLER</string>
     <string name="like_button_text">FAVORIS</string>
     <string name="website_text">SITE WEB</string>
+    <string name="restau_not_chosen_text">" n'a pas choisis de restaurant "</string>
+    <string name="restau_chosen_text">" a choisis le restaurant : "</string>
 </resources>

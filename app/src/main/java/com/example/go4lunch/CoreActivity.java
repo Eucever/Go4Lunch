@@ -66,6 +66,20 @@ public class CoreActivity extends AppCompatActivity {
 
         configureAlarm();
     }
+    @Override
+    public void onStart(){
+        super.onStart();
+        Toolbar mToolbar = this.findViewById(R.id.toolbar);
+        // initialiser l'icone de la toolbar pour ce fragment
+        mToolbar.setNavigationIcon(R.drawable.setting_icon);
+        // définir l'action au clic sur le bouton de navigation de la toolbar
+        mToolbar.setNavigationOnClickListener(v -> {
+            //get parent activity
+            DrawerLayout dl = this.findViewById(R.id.coreDrawer);
+            dl.open();
+        });
+
+    }
 
     @Override
     public void onResume(){

@@ -23,4 +23,6 @@
     <string name="call_button_text">CALL</string>
     <string name="like_button_text">LIKE</string>
     <string name="website_text">WEBSITE</string>
+    <string name="restau_not_chosen_text"> has not chosen a restaurant </string>
+    <string name="restau_chosen_text"> has chosen the restaurant : </string>
 </resources>

@@ -9,7 +9,6 @@ import androidx.annotation.RequiresPermission;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.model.location.GPSStatus;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -57,6 +56,7 @@ public class LocationRepository {
     @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"})
     public void startLocatingRequest(){
         armLocationCallback();
+        Log.d("LOCATIOREPO", "Start");
 
         fusedClient.removeLocationUpdates(locationCallback);
         fusedClient.requestLocationUpdates(
@@ -71,6 +71,7 @@ public class LocationRepository {
     }
 
     public void stopLocationCallback(){
+        Log.d("LOCATIOREPO", "Stop");
         if (locationCallback != null){
             fusedClient.removeLocationUpdates(locationCallback);
         }

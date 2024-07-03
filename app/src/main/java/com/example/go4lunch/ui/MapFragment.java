@@ -152,7 +152,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void configureStartPosition(){
-        if(latitude!= null && longitude != null){
+        if(latitudeStart!= null && longitudeStart != null && mGoogleMap != null){
             mGoogleMap.addMarker(new MarkerOptions()
                             .position(new LatLng(latitudeStart,longitudeStart)))
                     .setIcon(BitmapDescriptorFactory
@@ -189,6 +189,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
+                        Log.d("Handler", "RUNNIN");
                         LatLng poscamera = mGoogleMap.getCameraPosition().target;
                         mGoogleMap.addMarker(new MarkerOptions()
                                         .position(poscamera))
@@ -198,9 +199,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         longitude = poscamera.longitude;
                         Log.d("CAMERARUN", "Handler run");
                         //vv LIGNE COMMENTE POUR LIMITER LES APPELS A L API
-                        //configureMarkers();
+                        configureMarkers();
                     }
-                }, 500);
+                }, 50);
             }
         });
 
