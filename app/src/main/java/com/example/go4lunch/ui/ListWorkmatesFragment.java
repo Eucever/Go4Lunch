@@ -8,12 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.go4lunch.CoreActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.injection.Injection;
 import com.example.go4lunch.injection.ViewModelFactory;
@@ -98,6 +101,22 @@ public class ListWorkmatesFragment extends Fragment {
             //configureWorkmateItemList();
             super.onResume();
         }
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        Toolbar mToolbar = ((CoreActivity) getActivity()).findViewById(R.id.toolbar);
+        mToolbar.setTitle("Workmates");
+        // initialise toolbar icon
+        mToolbar.setNavigationIcon(R.drawable.setting_icon);
+        // Defines navigation on click listener
+        mToolbar.setNavigationOnClickListener(v -> {
+            //get parent activity
+            DrawerLayout dl = ((CoreActivity)getActivity()).findViewById(R.id.coreDrawer);
+            dl.open();
+        });
+
+    }
 
 
         private void configureViewModel(){

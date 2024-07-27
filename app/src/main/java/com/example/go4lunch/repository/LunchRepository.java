@@ -146,11 +146,6 @@ public class LunchRepository {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        ArrayList<Lunch> lunches = new ArrayList<>();
-                        /*for (QueryDocumentSnapshot document : task.getResult()) {
-                            lunches.add(document.toObject(Lunch.class));
-                            Log.d("VALUECHECK", "RESTO "+lunches.get(0).getRestaurant().getName());
-                        }*/
                         if(task.getResult().size()>0){
                             valueCheck.postValue(true);
                         }else {
