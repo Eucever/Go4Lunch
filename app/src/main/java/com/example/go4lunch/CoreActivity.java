@@ -1,15 +1,27 @@
 package com.example.go4lunch;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -22,9 +34,12 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.go4lunch.injection.Injection;
 import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.model.Workmate;
+import com.example.go4lunch.ui.AlarmReceiver;
 import com.example.go4lunch.viewmodel.DemoViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +47,10 @@ import butterknife.ButterKnife;
 public class CoreActivity extends AppCompatActivity {
 
     public AppBarConfiguration mAppBarConfiguration;
+
+    public static final boolean NOTIFICATION_DEBUG = true;
+    public static final String CHANNEL_ID = "Go4Lunch";
+    public static final String CHANNEL_NAME = "LunchAlarm";
 
 
     @BindView(R.id.coreDrawer)
@@ -64,8 +83,20 @@ public class CoreActivity extends AppCompatActivity {
 
         configureProfile();
 
+        checkNotificationPermission();
+
         configureAlarm();
     }
+
+    private void checkNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    1);
+        }
+    }
+
     @Override
     public void onStart(){
         super.onStart();
@@ -95,6 +126,60 @@ public class CoreActivity extends AppCompatActivity {
         mDemoViewModel = new ViewModelProvider(this, viewModelFactory).get(DemoViewModel.class);
     }
 
+    private void configureAlarm() {
+
+        // Create a notification channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            Log.d("ConfigureAlarm", "configureAlarm: Creating notification channel");
+
+            // Create the NotificationChannel
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID, // id
+                    CHANNEL_NAME, // name
+                    NotificationManager.IMPORTANCE_HIGH // importance
+            );
+
+            // Register the channel with the system
+            getSystemService(NotificationManager.class).createNotificationChannel(channel);
+        }
+
+        // Get calendar instance to day
+        Calendar calendar = Calendar.getInstance();
+
+        if(!NOTIFICATION_DEBUG) {
+            // Set the alarm to start at 12:00
+            calendar.set(Calendar.HOUR_OF_DAY, 12);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+        }
+
+        // Create an Intent to broadcast to the AlarmReceiver
+        Intent intent = new Intent(this, AlarmReceiver.class);
+
+        // Create a PendingIntent to be triggered when the alarm goes off
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this, // context
+                0, // no need to request code
+                intent, // intent to be triggered
+                PendingIntent.FLAG_IMMUTABLE // PendingIntent flag
+        );
+
+        // Get the AlarmManager service
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // Set the alarm to repeat every day
+        // Warning : the alarm is not exact, it can be delayed by the system up to few minutes
+        alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP, // alarm type
+                NOTIFICATION_DEBUG?System.currentTimeMillis()+10000:calendar.getTimeInMillis(), // time to start
+                AlarmManager.INTERVAL_DAY, // interval
+                pendingIntent // pending intent
+        );
+
+    }
+
     private void configureNavigationView(){
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.settingsFragment, R.id.yourLunchFragment)
                 .setOpenableLayout(mDrawer)
@@ -119,10 +204,6 @@ public class CoreActivity extends AppCompatActivity {
                 .into(avatar);
         username.setText(currentWorkmate.getName());
         email.setText(currentWorkmate.getMail());
-
-    }
-
-    private void configureAlarm(){
 
     }
 

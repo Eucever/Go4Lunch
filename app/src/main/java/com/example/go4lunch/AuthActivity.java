@@ -33,10 +33,10 @@ public class AuthActivity extends AppCompatActivity {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
-                        .setTheme(R.style.AppTheme)
+                        .setTheme(R.style.AuthTheme)
                         .setAvailableProviders(providers)
                         .setIsSmartLockEnabled(false, true)
-                        .setLogo(R.mipmap.ic_launcher)
+                        .setLogo(R.drawable.go4lunch)
                         .build(),
                 REQUEST_CODE_SIGN_IN);
 

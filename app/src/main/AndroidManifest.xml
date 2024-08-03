@@ -35,7 +35,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleMapApiKey}" />
-        <receiver android:name=".notifications.MyBroadcastReceiver" />
+        <receiver android:name=".ui.AlarmReceiver" />
 
         <activity
             android:name=".ui.RestaurantDetailActivity"
