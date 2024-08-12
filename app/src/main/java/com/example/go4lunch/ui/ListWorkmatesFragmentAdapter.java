@@ -50,9 +50,9 @@ public class ListWorkmatesFragmentAdapter extends RecyclerView.Adapter<ListWorkm
         WorkmateItem workmate = mWorkmates.get(position);
 
         if (workmate.getRestaurantForLunch()==null){
-            holder.wmateItemListText.setText(workmate.getName() + R.string.restau_chosen_text);
+            holder.wmateItemListText.setText(workmate.getName() + " has not chosen a restaurant");
         }else {
-            holder.wmateItemListText.setText(workmate.getName() + R.string.restau_chosen_text + workmate.getRestaurantForLunch().getName());
+            holder.wmateItemListText.setText(workmate.getName() + " has chosen the restaurant " + workmate.getRestaurantForLunch().getName());
         }
         Glide.with(holder.avatarWmateItemList.getContext())
                 .load(workmate.getAvatar())

@@ -27,7 +27,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private static final int NOTIFICATION_ID = 7; // 007
 
-    private void sendMessage(Context context, Intent intent, Restaurant restaurant, List<String> userNames) {
+    private void sendMessage(Context context, Restaurant restaurant, List<String> userNames) {
 
         // Build String
         StringBuilder sb = new StringBuilder();
@@ -92,7 +92,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             fakeRestaurant.setAddress("Fake Address");
             fakeRestaurant.setId("Fake ID");
             List<String> userNames = Arrays.asList("Test1", "Test2", "Test3");
-            sendMessage(context, intent, fakeRestaurant, userNames);
+            sendMessage(context, fakeRestaurant, userNames);
             return;
         }
 
@@ -121,7 +121,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             for (Workmate w : workmates) {
                                 mUsersList.add(w.getName());
                             }
-                            sendMessage(context, intent, restaurant, mUsersList);
+                            sendMessage(context, restaurant, mUsersList);
                         }
                         Log.e(TAG, "Unable to get the list of the other workmates that are participants of that lunch");
                     });

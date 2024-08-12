@@ -71,16 +71,6 @@ public class ListWorkmatesFragment extends Fragment {
                     false);
             ButterKnife.bind(this, view);
 
-            /*Toolbar mToolbar = ((CoreActivity) getActivity()).findViewById(R.id.toolbar);
-            // initialiser l'icone de la toolbar pour ce fragment
-            mToolbar.setNavigationIcon(R.drawable.baseline_star);
-            // définir l'action au clic sur le bouton de navigation de la toolbar
-            mToolbar.setNavigationOnClickListener(v -> {
-                //get parent activity
-                DrawerLayout dl = ((CoreActivity)getActivity()).findViewById(R.id.coreDrawer);
-                dl.open();
-            });*/
-
             listWmateAdapter = new ListWorkmatesFragmentAdapter(new ArrayList<>());
 
             configureViewModel();
@@ -129,14 +119,6 @@ public class ListWorkmatesFragment extends Fragment {
         workmateRecycler.setLayoutManager(new LinearLayoutManager(this.getContext()));
         workmateRecycler.setAdapter(listWmateAdapter);
         configureWorkmateItemList();
-        /*mDemoViewModel.getAllWorkmates().observe(this, arg ->{
-            if (arg == null){
-                Log.d("WORKMATES_FRAGMENT_LIST","No Workmates found in collection");
-            }else{
-                listWmateAdapter.setmWorkmates(arrayListWorkmateToWorkmateItem(arg));
-            }
-        });
-        */
 
     }
 
