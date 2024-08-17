@@ -21,6 +21,7 @@ import com.example.go4lunch.model.Workmate;
 import com.example.go4lunch.model.location.GPSStatus;
 import com.example.go4lunch.place.ListRestaurant;
 import com.example.go4lunch.place.Result;
+import com.example.go4lunch.place.ResultDetails;
 import com.example.go4lunch.repository.LocationRepository;
 import com.example.go4lunch.repository.LunchRepository;
 import com.example.go4lunch.repository.RestaurantRepository;
@@ -140,6 +141,35 @@ public class DemoViewModel extends ViewModel {
     public Call<ListRestaurant> getAllRestaurant(String url, String location, int radius, String type, String key){
         return mRestoRepo.getAllRestaurant(url, location, radius, type, key);
     }
+
+    public Call<ResultDetails>getRestaurantDetail(String url, String key, String place_id){
+        return mRestoRepo.getRestaurantDetail(url, key, place_id);
+    }
+
+    public MutableLiveData<Restaurant> getRestaurantDetailLiveData(Restaurant restaurant){
+        Log.i("DMVPLACEID", ""+ restaurant.getId());
+        MutableLiveData<Restaurant> liveDataRestaurant = new MutableLiveData<>();
+        Call<ResultDetails> resultCall = getRestaurantDetail("https://maps.googleapis.com/maps/api/place/", BuildConfig.google_maps_api, restaurant.getId());
+        resultCall.enqueue(new Callback<ResultDetails>() {
+            @Override
+            public void onResponse(Call<ResultDetails> call, Response<ResultDetails> response) {
+                if(response.isSuccessful()){
+                    ResultDetails result = response.body();
+                    Log.d("DMVDETAILWEBSITE", ""+ result.getResult().getWebsite());
+                    restaurant.setWebsite(result.getResult().getWebsite());
+                    restaurant.setPhoneNumber(result.getResult().getFormatted_phone_number());
+                    liveDataRestaurant.postValue(restaurant);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResultDetails> call, Throwable t) {
+                Log.i("error", "Call Failed");
+            }
+        });
+        return liveDataRestaurant;
+    }
+
     public double getDistanceFromPosition(LatLng posGPS, com.example.go4lunch.place.Location location){
         return SphericalUtil.computeDistanceBetween(posGPS, new LatLng(location.getLat(), location.getLng()));
     }

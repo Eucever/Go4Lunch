@@ -2,6 +2,7 @@ package com.example.go4lunch.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -40,6 +41,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     public ImageButton likeRestaubtn;
 
+    public ImageButton callButton;
+
+    public ImageButton websiteBtn;
+
     public RecyclerView workmateRecycler;
 
     private WorkmateRecyclerAdapter restauAdapter;
@@ -60,6 +65,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         workmateRecycler = findViewById(R.id.workmatesRecycler);
         likeRestaubtn = findViewById(R.id.likeRestauButton);
         chooseRestauBtn = findViewById(R.id.chooseRestauBtn);
+        websiteBtn = findViewById(R.id.websiteButton);
+        callButton = findViewById(R.id.callButton);
+
 
         restauAdapter = new WorkmateRecyclerAdapter();
 
@@ -89,6 +97,31 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         titleRestau.setText(restaurantSent.getName());
         restauDesc.setText(restaurantSent.getAddress());
         restauRatingStars.setRating(restaurantSent.getRating().floatValue());
+        mDemoViewModel.getRestaurantDetailLiveData(restaurantSent).observe(this, v->{
+            restaurantSent = v;
+            Log.i("WEBSITECONFIGURE", "" +  restaurantSent.getWebsite());
+            websiteBtn.setOnClickListener(view ->{
+                if(restaurantSent.getWebsite() != null){
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurantSent.getWebsite()));
+                    startActivity(browserIntent);
+                }else {
+                    Log.e("RestaurantDetailActivity", "Error no Website");
+                }
+            });
+
+            callButton.setOnClickListener(view -> {
+                if(restaurantSent.getPhoneNumber() != null){
+                    String phoneNumber = restaurantSent.getPhoneNumber().replace(" ","");
+                    Intent phoneCall = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phoneNumber));
+                    startActivity(phoneCall);
+                }else {
+                    Log.e("RestaurantDetailActivity", "Error no Website");
+                }
+
+            });
+
+        });
+
 
         Glide.with(this).load(restaurantSent.getImage()).into(avatarRestau);
     }

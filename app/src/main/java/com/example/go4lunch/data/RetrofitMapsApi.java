@@ -1,8 +1,7 @@
 package com.example.go4lunch.data;
 
 import com.example.go4lunch.place.ListRestaurant;
-
-import java.util.List;
+import com.example.go4lunch.place.ResultDetails;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,4 +15,9 @@ public interface RetrofitMapsApi {
             @Query("type") String type,
             @Query("key") String key
     );
+
+    @GET("details/json")
+    Call<ResultDetails> getRestaurantDetails(
+            @Query("key") String key,
+            @Query("place_id") String placeId);
 }

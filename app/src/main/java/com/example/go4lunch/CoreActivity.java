@@ -48,7 +48,7 @@ public class CoreActivity extends AppCompatActivity {
 
     public AppBarConfiguration mAppBarConfiguration;
 
-    public static final boolean NOTIFICATION_DEBUG = true;
+    public static final boolean NOTIFICATION_DEBUG = false;
     public static final String CHANNEL_ID = "Go4Lunch";
     public static final String CHANNEL_NAME = "LunchAlarm";
 

@@ -2,6 +2,7 @@ package com.example.go4lunch.repository;
 
 import com.example.go4lunch.data.RetrofitMapsApi;
 import com.example.go4lunch.place.ListRestaurant;
+import com.example.go4lunch.place.ResultDetails;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -35,4 +36,15 @@ public class RestaurantRepository {
 
 
     }
+
+    public Call<ResultDetails> getRestaurantDetail(String url, String key, String place_id){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        return retrofit.create(RetrofitMapsApi.class)
+                .getRestaurantDetails(key, place_id);
+    }
+
+
 }
